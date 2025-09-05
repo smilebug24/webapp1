@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>이름 & 별명 저장</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f4f8;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    input {
+      display: block;
+      width: 250px;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h2>이름 & 별명 저장</h2>
+  <form id="dataForm">
+    <input type="text" id="name" placeholder="이름 입력" required />
+    <input type="text" id="nickname" placeholder="별명 입력" required />
+    <button type="submit">저장</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbw3AlUpmTPGSaTVoZbr3dOB3YkhvjW30nFTF0iUxfAb17e6UNcf4Jbne-RyCu--Wq-d/exec";  
+    // 예: https://script.google.com/macros/s/AKfycbxxxxxxx/exec
+
+    document.getElementById("dataForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const nickname = document.getElementById("nickname").value.trim();
+
+      if (!name || !nickname) {
+        alert("모든 필드를 입력하세요!");
+        return;
+      }
+
+      try {
+        const response = await fetch(scriptURL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, nickname }),
+        });
+
+        const result = await response.text();
+        document.getElementById("result").innerText = result;
+      } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("result").innerText = "❌ 저장 실패 (콘솔 확인)";
+      }
+    });
+  </script>
+</body>
+</html>
