@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>미세먼지 상태 조회</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 0px;
+        }
+        #result {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 1px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h3 {
+            color: #1a535c;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #000;
+            margin-bottom: 5px;
+        }
+        .emoji {
+            color: #1a535c;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="result"></div>
+
+<script>
+    // 서버에서 API 키 가져오기
+    async function getApiKey() {
+        try {
+            const response = await fetch('/api/get-key');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            return data.apiKey;
+        } catch (error) {
+            console.error('API 키 로드 실패:', error);
+            return null;
+        }
+    }
+
+    async function getData() {
+        const apiKey = await getApiKey();
+        if (!apiKey) {
+            document.getElementById('result').innerText = 'API 키 로드 실패';
+            return;
+        }
+
+        const url = `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?sidoName=울산&pageNo=1&numOfRows=100&returnType=json&serviceKey=${apiKey}&ver=1.0`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            let stationName;
+            let pm25Value;
+            let dataTime;
+            let pm25Imojji;
+
+            if (data && data.response && data.response.body && data.response.body.items) {
+                const airQualityData = data.response.body.items;
+                airQualityData.forEach(item => {
+                    if (item.stationName === '삼남읍') {
+                        stationName = item.stationName;
+                        pm25Grade = item.pm25Grade;
+                        pm25Value = item.pm25Value;
+                        dataTime = item.dataTime;
+
+                        if (pm25Grade == 1) {
+                            pm25Imojji = "😊좋음😊";
+                        } else if (pm25Grade == 2) {
+                            pm25Imojji = "😐보통😐";
+                        } else if (pm25Grade == 3) {
+                            pm25Imojji = "😷나쁨😷";
+                        } else {
+                            pm25Imojji = "❓정보 없음";
+                        }
+                    }
+                });
+
+                document.getElementById('result').innerHTML = `
+                    <h3>우리학교 미세먼지</h3>
+                    <p><span class="emoji">${pm25Imojji}</span><br>
+                    측정 장소: ${stationName}<br>
+                    측정 시간: ${dataTime}<br>
+                    미세먼지 농도: ${pm25Value}</p>
+                `;
+            } else {
+                document.getElementById('result').innerText = '데이터 없음';
+            }
+        } catch (error) {
+            console.error('데이터 가져오기 실패:', error);
+            document.getElementById('result').innerText = '데이터 가져오기 실패';
+        }
+    }
+
+    window.onload = getData;
+</script>
+
+</body>
+</html>
