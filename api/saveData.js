@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     const response = await fetch(GAS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, nickname }),
+      body: JSON.stringify({ "name":name, "nickname":nickname }),
     });
 
     const text = await response.text();
