@@ -12,7 +12,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing fields" });
     }
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzKip4TioRI8tq1jm_0SRxzbFI7hRI87aJ47C70d9Www-KcauFHpMcIgXPpb_Q6Ac7z/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzZSxSqG5mDe_ia003pS3p0ISRihc1b6Y7XqLJ2brHW-CoSgKarhpB4zcuVpJJJk5S8/exec";
 
     const response = await fetch(GAS_URL, {
       method: "POST",
