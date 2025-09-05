@@ -1,85 +1,41 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>정보 입력</title>
   <style>
-    body {
-      font-family: "Noto Sans KR", sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #f6d365, #fda085);
-      margin: 0;
-    }
-    h1 {
-      color: #fff;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 300px;
-    }
-    input {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    button {
-      background: #ff6f61;
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-    button:hover {
-      background: #e85a50;
-    }
-    #result {
-      margin-top: 15px;
-      font-weight: bold;
-      color: #333;
-    }
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    input { margin: 5px; padding: 8px; }
+    button { padding: 10px 20px; }
   </style>
 </head>
 <body>
-  <h1>📝 정보 입력</h1>
+  <h1>이름과 별명 입력</h1>
   <form id="dataForm">
-    <input type="text" id="name" placeholder="이름 입력" required>
-    <input type="text" id="nickname" placeholder="별명 입력" required>
+    <input type="text" id="name" placeholder="이름" required />
+    <input type="text" id="nickname" placeholder="별명" required />
     <button type="submit">저장</button>
   </form>
-  <div id="result"></div>
+  <p id="result"></p>
 
   <script>
     document.getElementById("dataForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = document.getElementById("name").value.trim();
-      const nickname = document.getElementById("nickname").value.trim();
+      const name = document.getElementById("name").value;
+      const nickname = document.getElementById("nickname").value;
 
       try {
         const res = await fetch("/api/saveData", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, nickname }),
+          body: JSON.stringify({ name, nickname })
         });
-        const json = await res.json();
-        document.getElementById("result").innerText = json.result || json.error;
+        const data = await res.json();
+        document.getElementById("result").innerText =
+          "✅ 저장 성공: " + JSON.stringify(data);
       } catch (err) {
-        document.getElementById("result").innerText = "❌ 전송 실패: " + err.message;
+        document.getElementById("result").innerText =
+          "❌ 오류 발생: " + err.message;
       }
     });
   </script>
