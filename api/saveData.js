@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   try {
     const { name, nickname } = req.body;
 
-    const GAS_URL = "👉 여기 Apps Script 웹앱 URL 붙여넣기";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycby0NgbqZkAjn4ybTUTGOI0ghOLLxiYW5TPPwxTDBTyH6Z8A3Z8RciMl2oRKvgyyz5yN/exec";
 
     const response = await fetch(GAS_URL, {
       method: "POST",
