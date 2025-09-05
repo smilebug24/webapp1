@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시간표 조회 결과</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #fff;
+    }
+    .container {
+      max-width: calc(100vw);
+      height: calc(90vh);
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    h3 {
+      text-align: center;
+      font-size: 16px;
+      color: #1a535c;
+      margin-bottom: 10px;
+    }
+    .select-wrapper {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    select {
+      padding: 10px;
+      font-size: 12px;
+      border: 2px solid #1a535c;
+      border-radius: 10px;
+      background-color: #4ecdc4;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    select:hover {
+      background-color: #1a535c;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 5px;
+      text-align: center;
+    }
+    th:nth-child(1), td:nth-child(1) {
+      width: 15%;
+    }
+    th:nth-child(4), td:nth-child(4) {
+      width: 45%;
+    }
+    th {
+      background-color: #1a535c;
+      color: #ffffff;
+      font-size: 12px;
+    }
+    td {
+      background-color: #f2f9f9;
+      font-size: 12px;
+    }
+    #timetable_table_container {
+      max-height: calc(100vh);
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3 id="today">오늘 시간표</h3>
+    <div class="select-wrapper">
+      <select id="gradeSelect" onchange="fetchTimetable()">
+        <option value="">전체 학년</option>
+        <option value="1">1학년</option>
+        <option value="2">2학년</option>
+        <option value="3">3학년</option>
+      </select>
+    </div>
+
+    <div id="timetable_table_container">
+      <table id="timetable_table">
+        <thead>
+          <tr>
+            <th>학년</th>
+            <th>강의실명</th>
+            <th>교시</th>
+            <th>수업내용</th>
+          </tr>
+        </thead>
+        <tbody id="timeTable_body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // API 키 가져오기
+    async function getApiKey() {
+      try {
+        const response = await fetch('/api/get-key');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        return data.apiKey;
+      } catch (error) {
+        console.error('API 키 로드 실패:', error);
+        return null;
+      }
+    }
+
+    async function fetchTimetable() {
+      const grade = document.getElementById('gradeSelect').value;
+
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const formattedDate = `${year}${month}${day}`;
+
+      document.getElementById("today").textContent = `오늘의 시간표 ${year}-${month}-${day}`;
+
+      const apiKey = await getApiKey();
+      if (!apiKey) {
+        alert('API 키를 불러오지 못했습니다.');
+        return;
+      }
+
+      const educationOfficeCode = 'H10';
+      const schoolCode = 7480188;
+
+      let url = `https://open.neis.go.kr/hub/hisTimetable?KEY=${apiKey}&Type=json&pIndex=1&pSize=100&ATPT_OFCDC_SC_CODE=${educationOfficeCode}&SD_SCHUL_CODE=${schoolCode}&ALL_TI_YMD=${formattedDate}`;
+      if (grade) {
+        url += `&GRADE=${grade}`;
+      }
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const timetableData = data.hisTimetable[1].row;
+
+        const timetableBody = document.getElementById('timeTable_body');
+        timetableBody.innerHTML = '';
+
+        timetableData.forEach(entry => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${entry.GRADE}</td>
+            <td>${entry.CLRM_NM}</td>
+            <td>${entry.PERIO}</td>
+            <td>${entry.ITRT_CNTNT}</td>
+          `;
+          timetableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('에러 발생:', error);
+      }
+    }
+
+    // 페이지 로드될 때 오늘의 시간표 조회
+    window.onload = fetchTimetable;
+  </script>
+</body>
+</html>
