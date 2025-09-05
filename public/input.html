@@ -4,16 +4,69 @@
   <meta charset="UTF-8" />
   <title>정보 입력</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    input { margin: 5px; padding: 8px; }
-    button { padding: 10px 20px; }
+    body {
+      font-family: 'Comic Sans MS', cursive, Arial;
+      background: linear-gradient(135deg, #ffebf0, #e0f7fa);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #ff69b4;
+      text-shadow: 1px 1px 2px #fff;
+    }
+    form {
+      background: #fff0f8;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input {
+      margin: 10px 0;
+      padding: 12px 20px;
+      border: 2px solid #ff69b4;
+      border-radius: 15px;
+      outline: none;
+      font-size: 16px;
+      width: 250px;
+    }
+    input:focus {
+      border-color: #ff1493;
+      box-shadow: 0 0 8px #ffb6c1;
+    }
+    button {
+      margin-top: 15px;
+      padding: 12px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 20px;
+      background: #ff69b4;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: #ff1493;
+      transform: scale(1.05);
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #ff1493;
+    }
   </style>
 </head>
 <body>
-  <h1>이름과 별명 입력</h1>
+  <h1>정보 입력</h1>
   <form id="dataForm">
     <input type="text" id="name" placeholder="이름" required />
-    <input type="text" id="nickname" placeholder="별명" required />
+    <input type="email" id="email" placeholder="이메일" required />
     <button type="submit">저장</button>
   </form>
   <p id="result"></p>
@@ -22,13 +75,13 @@
     document.getElementById("dataForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.getElementById("name").value;
-      const nickname = document.getElementById("nickname").value;
+      const email = document.getElementById("email").value;
 
       try {
         const res = await fetch("/api/saveData", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, nickname })
+          body: JSON.stringify({ name, email })
         });
         const data = await res.json();
         document.getElementById("result").innerText =
