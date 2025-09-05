@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   try {
     const { name, nickname } = req.body;
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycby0NgbqZkAjn4ybTUTGOI0ghOLLxiYW5TPPwxTDBTyH6Z8A3Z8RciMl2oRKvgyyz5yN/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwFPSD5sguzS8kb-3bLIiMaihssfkH5N-z7Oi-bLz13bLg-2dNwBB7MLYjCXSWqlhwp/exec";
 
     const response = await fetch(GAS_URL, {
       method: "POST",
